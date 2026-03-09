@@ -251,8 +251,7 @@ class CustomTorchVisionSegmentation(nn.Module):
 
         # 2. Remove Auxiliary Branch (Saves compute/memory)
         self.model.aux_classifier = None
-        del self.model.aux_classifier
-
+        
         # 3. Handle Classification Head
         # Default is 21 classes. If num_classes is provided and != 21, replace head.
         if num_classes is not None and num_classes != 21:
