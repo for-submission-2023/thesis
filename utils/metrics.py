@@ -21,7 +21,8 @@ def evaluate(dataset, model, num_classes, device='cpu', label_dict=None):
         image, label = image.to(device), label.numpy()
         
         with torch.no_grad():
-            prediction = model(image.unsqueeze(0))
+            with torch.amp.autocast('cuda'):
+                prediction = model(image.unsqueeze(0))
         prediction = prediction[0].argmax(0).detach().cpu().numpy()
         
         # Union of GT and predicted labels, excluding background (0)
