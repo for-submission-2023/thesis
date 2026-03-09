@@ -1,7 +1,9 @@
-# Ignore everything except datasets and models py files
+# Ignore everything except datasets, models, and utils py files
 *
 !.gitignore
 !datasets/
 !datasets/*.py
 !models/
 !models/*.py
+!utils/
+!utils/*.py
