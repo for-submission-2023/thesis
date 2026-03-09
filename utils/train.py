@@ -35,7 +35,9 @@ def train(model, optimizer, num_classes, train_loader=None, valid_loader=None,
     # Dice loss for segmentation overlap, background ignored in Dice
     loss_1 = nn.CrossEntropyLoss()
     loss_2 = smp.losses.DiceLoss(mode='multiclass', ignore_index=0)
-    
+
+    scaler = torch.amp.GradScaler('cuda')
+                    
     for epoch in tqdm(range(1, epochs + 1)):
         
         # ── Training ──────────────────────────────────────────────────────────
@@ -43,11 +45,13 @@ def train(model, optimizer, num_classes, train_loader=None, valid_loader=None,
         model.train()
         for batch in train_loader:
             i, j = batch[0].to(device), batch[1].to(device)
-            out  = model(i)
-            loss = loss_1(out, j) + loss_2(out, j)
+            with torch.amp.autocast('cuda'):
+                out  = model(i)
+                loss = loss_1(out, j) + loss_2(out, j)
             optimizer.zero_grad()
-            loss.backward()
-            optimizer.step()
+            scaler.scale(loss).backward()
+            scaler.step(optimizer)
+            scaler.update()
 
 
             if poly_lr:
@@ -67,8 +71,9 @@ def train(model, optimizer, num_classes, train_loader=None, valid_loader=None,
         with torch.no_grad():
             for batch in valid_loader:
                 i, j = batch[0].to(device), batch[1].to(device)
-                out  = model(i)
-                loss = loss_1(out, j) + loss_2(out, j)
+                with torch.amp.autocast('cuda'):
+                    out  = model(i)
+                    loss = loss_1(out, j) + loss_2(out, j)
                 valid_epoch_loss.append(loss.item())
         
         valid_losses.append(np.mean(valid_epoch_loss))
