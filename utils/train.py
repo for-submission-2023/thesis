@@ -41,7 +41,7 @@ def train(model, optimizer, num_classes, train_loader=None, valid_loader=None,
         # ── Training ──────────────────────────────────────────────────────────
         train_epoch_loss = []
         model.train()
-        for batch in tqdm(train_loader):
+        for batch in train_loader:
             i, j = batch[0].to(device), batch[1].to(device)
             out  = model(i)
             loss = loss_1(out, j) + loss_2(out, j)
@@ -65,7 +65,7 @@ def train(model, optimizer, num_classes, train_loader=None, valid_loader=None,
         valid_epoch_loss = []
         model.eval()
         with torch.no_grad():
-            for batch in tqdm(valid_loader):
+            for batch in valid_loader:
                 i, j = batch[0].to(device), batch[1].to(device)
                 out  = model(i)
                 loss = loss_1(out, j) + loss_2(out, j)
