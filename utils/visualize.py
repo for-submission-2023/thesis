@@ -8,7 +8,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 import matplotlib
-matplotlib.use('TkAgg')  # Necessary to run matplotlib
+# matplotlib.use('TkAgg')  # Necessary to run matplotlib
 
 
 def _normalize_image(image_np):
