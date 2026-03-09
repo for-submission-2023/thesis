@@ -36,16 +36,16 @@ def train(model, optimizer, num_classes, train_loader=None, valid_loader=None,
     loss_1 = nn.CrossEntropyLoss()
     loss_2 = smp.losses.DiceLoss(mode='multiclass', ignore_index=0)
 
-    scaler = torch.amp.GradScaler('cuda')
+    scaler = torch.cuda.amp.GradScaler()
                     
     for epoch in tqdm(range(1, epochs + 1)):
         
         # ── Training ──────────────────────────────────────────────────────────
         train_epoch_loss = []
         model.train()
-        for batch in train_loader:
+        for batch in tqdm(train_loader):
             i, j = batch[0].to(device), batch[1].to(device)
-            with torch.amp.autocast('cuda'):
+            with torch.cuda.amp.autocast():
                 out  = model(i)
                 loss = loss_1(out, j) + loss_2(out, j)
             optimizer.zero_grad()
@@ -69,9 +69,9 @@ def train(model, optimizer, num_classes, train_loader=None, valid_loader=None,
         valid_epoch_loss = []
         model.eval()
         with torch.no_grad():
-            for batch in valid_loader:
+            for batch in tqdm(valid_loader):
                 i, j = batch[0].to(device), batch[1].to(device)
-                with torch.amp.autocast('cuda'):
+                with torch.cuda.amp.autocast():
                     out  = model(i)
                     loss = loss_1(out, j) + loss_2(out, j)
                 valid_epoch_loss.append(loss.item())

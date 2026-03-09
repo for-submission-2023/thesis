@@ -16,12 +16,12 @@ def evaluate(dataset, model, num_classes, device='cpu', label_dict=None):
     # classes with no appearances still show up in the per-class printout
     result_dict = {cls: [] for cls in range(1, num_classes)}
     
-    for i in range(len(dataset)):
+    for i in tqdm(range(len(dataset))):
         image, label = dataset[i]
         image, label = image.to(device), label.numpy()
         
         with torch.no_grad():
-            with torch.amp.autocast('cuda'):
+            with torch.cuda.amp.autocast():
                 prediction = model(image.unsqueeze(0))
         prediction = prediction[0].argmax(0).detach().cpu().numpy()
         
