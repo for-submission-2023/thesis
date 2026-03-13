@@ -234,7 +234,7 @@ models_config = [
     {
         'name':          'UNETR-ViT-D12-Direct',
         'model':         UNETR_ViT(model_name='vit_base_patch16_224', num_classes=NUM_CLASSES, depth=12, direct_upsample=True,  pretrained=True,  dynamic_img_size=True),
-        'model_path':    None,
+        'model_path':    '/home/litisnouman/Desktop/Thesis_18_02_26/saved_models/synapse2d_adam_unetr_vit_d12_direct_dice0_76_epoch43.pth',
         'train_model':   True,
         'evaluate_only': False,
     },
@@ -324,45 +324,45 @@ models_config = [
     #     'train_model':   True,
     #     'evaluate_only': False,
     # },
-    {
-        'name':          'UNETR-SAM-D12-Direct',
-        'model':         UNETR_SAM(num_classes=NUM_CLASSES, depth=12, direct_upsample=True, pretrained=True),
-        'model_path':    None,
-        'train_model':   True,
-        'evaluate_only': False,
-    },
+    # {
+    #     'name':          'UNETR-SAM-D12-Direct',
+    #     'model':         UNETR_SAM(num_classes=NUM_CLASSES, depth=12, direct_upsample=True, pretrained=True),
+    #     'model_path':    '/home/litisnouman/Desktop/Thesis_18_02_26/saved_models/synapse2d_adam_unetr_sam_d12_direct_dice0_75_epoch63.pth',
+    #     'train_model':   True,
+    #     'evaluate_only': False,
+    # },
 
     # ── DeepLabV3 / FCN ─────────────────────────────────────────────────────
-    {
-        'name':          'DeepLabV3-R50',
-        'model':         CustomTorchVisionSegmentation(model_type='deeplabv3', num_classes=NUM_CLASSES, pretrained=True),
-        'model_path':    None,
-        'train_model':   True,
-        'evaluate_only': False,
-    },
-    {
-        'name':          'FCN-R50',
-        'model':         CustomTorchVisionSegmentation(model_type='fcn',       num_classes=NUM_CLASSES, pretrained=True),
-        'model_path':    None,
-        'train_model':   True,
-        'evaluate_only': False,
-    },
+    # {
+    #     'name':          'DeepLabV3-R50',
+    #     'model':         CustomTorchVisionSegmentation(model_type='deeplabv3', num_classes=NUM_CLASSES, pretrained=True),
+    #     'model_path':    None,
+    #     'train_model':   True,
+    #     'evaluate_only': False,
+    # },
+    # {
+    #     'name':          'FCN-R50',
+    #     'model':         CustomTorchVisionSegmentation(model_type='fcn',       num_classes=NUM_CLASSES, pretrained=True),
+    #     'model_path':    None,
+    #     'train_model':   True,
+    #     'evaluate_only': False,
+    # },
 
     # ── SMP ─────────────────────────────────────────────────────────────────
-    {
-        'name':          'SMP-Unet-R50',
-        'model':         CustomSMP(arch='Unet',       encoder_name='resnet50', encoder_weights='imagenet', num_classes=NUM_CLASSES, in_channels=IN_CHANNELS),
-        'model_path':    None,
-        'train_model':   True,
-        'evaluate_only': False,
-    },
-    {
-        'name':          'SMP-Unet-VGG16',
-        'model':         CustomSMP(arch='Unet',       encoder_name='vgg16',    encoder_weights='imagenet', num_classes=NUM_CLASSES, in_channels=IN_CHANNELS),
-        'model_path':    None,
-        'train_model':   True,
-        'evaluate_only': False,
-    },
+    # {
+    #     'name':          'SMP-Unet-R50',
+    #     'model':         CustomSMP(arch='Unet',       encoder_name='resnet50', encoder_weights='imagenet', num_classes=NUM_CLASSES, in_channels=IN_CHANNELS),
+    #     'model_path':    None,
+    #     'train_model':   True,
+    #     'evaluate_only': False,
+    # },
+    # {
+    #     'name':          'SMP-Unet-VGG16',
+    #     'model':         CustomSMP(arch='Unet',       encoder_name='vgg16',    encoder_weights='imagenet', num_classes=NUM_CLASSES, in_channels=IN_CHANNELS),
+    #     'model_path':    None,
+    #     'train_model':   True,
+    #     'evaluate_only': False,
+    # },
 
     # ── VGGUNet ─────────────────────────────────────────────────────────────
     # {
@@ -416,13 +416,13 @@ models_config = [
     # },
 
     # ── TransUNet ───────────────────────────────────────────────────────────
-    {
-        'name':          'TransUNet',
-        'model':         TransUNet(img_size=IMG_SIZE, num_classes=NUM_CLASSES, pretrained=True),
-        'model_path':    None,
-        'train_model':   True,
-        'evaluate_only': False,
-    },
+    # {
+    #     'name':          'TransUNet',
+    #     'model':         TransUNet(img_size=IMG_SIZE, num_classes=NUM_CLASSES, pretrained=True),
+    #     'model_path':    '/home/litisnouman/Desktop/Thesis_18_02_26/saved_models/synapse2d_adam_transunet_dice0_75_epoch69.pth',
+    #     'train_model':   True,
+    #     'evaluate_only': False,
+    # },
 ]
 
 # ==============================================================================
@@ -487,6 +487,7 @@ for cfg in models_config:
     valid_loader = DataLoader(valid_dataset, batch_size=bs, shuffle=False, num_workers=NUM_WORKERS, pin_memory=True)
 
     optimizer = optim.AdamW(model.parameters(), lr=LR)
+    # optimizer = optim.SGD(model.parameters(), lr=0.01, momentum=0.9, weight_decay=0.00001)
 
     if model_path is not None:
         print(f'  -> Resuming training from: {model_path}')

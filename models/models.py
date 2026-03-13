@@ -173,6 +173,10 @@ class UNETR_ViT(nn.Module):
 
     def forward(self, x):
         B, C, H, W = x.shape
+
+        if C == 1:
+            x = x.repeat(1, 3, 1, 1)
+
         feats = self.vit(x)
         img = self.img_conv(x)
 

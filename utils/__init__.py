@@ -33,6 +33,16 @@ from .rise import rise_segmentation, rise_segmentation_batch, generate_masks
 from .xai_metrics import pixel_deletion_curve, pixel_insertion_curve, compute_auc
 from .misure import misure, dilate_to_sufficient, misure_1
 
+from .misure_experiment_claude import misure_1 as misure_1_claude
+from .xai_metrics_claude import (
+    compute_paired_metric    as compute_paired_metric_claude,
+    compute_paired_metric_batch,
+    blend_with_baseline,
+    apply_heatmap_mask       as apply_heatmap_mask_claude,
+    get_baseline,
+    sweep_thresholds,
+)
+
 __all__ = [
     'train',
     'evaluate',
@@ -52,5 +62,12 @@ __all__ = [
     'compute_auc',
     'misure',
     'dilate_to_sufficient',
-    'misure_1'
+    'misure_1',
+    'misure_1_claude',
+    'compute_paired_metric_claude',
+    'compute_paired_metric_batch',
+    'blend_with_baseline',
+    'apply_heatmap_mask_claude',
+    'get_baseline',
+    'sweep_thresholds',
 ]

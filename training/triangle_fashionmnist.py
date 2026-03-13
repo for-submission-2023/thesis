@@ -17,7 +17,7 @@ import albumentations as A
 from torchvision import datasets
 
 from datasets import FashionMNISTDataset
-from models.models import UNET, UNETR_ViT, UNETR_SAM, TransUNet, CustomTorchVisionSegmentation, CustomSMP, CustomSMPCompressed
+from models.models import UNET, UNETR_ViT, UNETR_SAM, CustomTorchVisionSegmentation, CustomSMP, VGGUNet_Dynamic
 from utils.train import train
 from utils.metrics import evaluate
 
@@ -26,7 +26,7 @@ from utils.metrics import evaluate
 # EXPERIMENT CONFIGURATION
 # ==============================================================================
 
-EXPERIMENT_NAME  = 'trianlge_fashionmnist_336_lr'
+EXPERIMENT_NAME  = 'triangle_fashionmnist_224'
 
 # Dataset composition
 LABELS           = [1]   # foreground FashionMNIST classes
@@ -38,16 +38,16 @@ JITTER           = 0
 
 # Dataset
 NUM_CLASSES      = 2
-IMG_SIZE         = 336
+IMG_SIZE         = 224
 IN_CHANNELS      = 3
 
 # DataLoader
-BATCH_SIZE       = 8
+BATCH_SIZE       = 4
 NUM_WORKERS      = 4
 
 # Training
 DEVICE           = 'cuda' if torch.cuda.is_available() else 'cpu'
-EPOCHS           = 50
+EPOCHS           = 300
 LR               = 1e-4
 POLY_LR          = True
 
@@ -70,9 +70,9 @@ UNETR_SAM_DEPTH  = 1     # set manually
 
 train_transform = A.Compose([
     A.Resize(IMG_SIZE, IMG_SIZE),
-    A.HorizontalFlip(p=AUG_PROB),
-    A.VerticalFlip(p=AUG_PROB),
-    A.Rotate(limit=ROTATION_LIMIT, p=AUG_PROB),
+    # A.HorizontalFlip(p=AUG_PROB),
+    # A.VerticalFlip(p=AUG_PROB),
+    # A.Rotate(limit=ROTATION_LIMIT, p=AUG_PROB),
 ])
 
 valid_transform = A.Compose([
@@ -144,13 +144,13 @@ models_config = [
     # },
 
     # ── UNETR-ViT (direct upsample) ─────────────────────────────────────────
-    # {
-    #     'name':          f'UNETR-ViT-D1-Direct',
-    #     'model':         UNETR_ViT(num_classes=NUM_CLASSES, depth=1, pretrained=True, direct_upsample=True),
-    #     'model_path':    None,
-    #     'train_model':   True,
-    #     'evaluate_only': False,
-    # },
+    {
+        'name':          f'UNETR-ViT-D1-Direct',
+        'model':         UNETR_ViT(num_classes=NUM_CLASSES, depth=1, pretrained=True, direct_upsample=True),
+        'model_path':    None,
+        'train_model':   True,
+        'evaluate_only': False,
+    },
     # {
     #     'name':          f'UNETR-ViT-D2-Direct',
     #     'model':         UNETR_ViT(num_classes=NUM_CLASSES, depth=2, pretrained=True, direct_upsample=True),
@@ -166,14 +166,15 @@ models_config = [
     #     'evaluate_only': False,
     # },
 
+    # 
     # ── UNETR-SAM ───────────────────────────────────────────────────────────
-    {
-        'name':          f'UNETR-SAM-D{UNETR_SAM_DEPTH}',
-        'model':         UNETR_SAM(num_classes=NUM_CLASSES, depth=UNETR_SAM_DEPTH, pretrained=True),
-        'model_path':    f'{SAVED}/trianlge_fashionmnist_336_lr_unetr_sam_d1_dice0_86_epoch103.pth',
-        'train_model':   True,
-        'evaluate_only': False,
-    },
+    # {
+    #     'name':          f'UNETR-SAM-D{UNETR_SAM_DEPTH}',
+    #     'model':         UNETR_SAM(num_classes=NUM_CLASSES, depth=UNETR_SAM_DEPTH, pretrained=True),
+    #     'model_path':    None,
+    #     'train_model':   True,
+    #     'evaluate_only': False,
+    # },
 
     # ── DeepLabV3 / FCN ─────────────────────────────────────────────────────
     # {

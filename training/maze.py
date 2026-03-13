@@ -41,7 +41,7 @@ NUM_WORKERS  = 8
 
 # Training
 DEVICE       = 'cuda' if torch.cuda.is_available() else 'cpu'
-EPOCHS       = 80
+EPOCHS       = 50
 LR           = 1e-4
 POLY_LR      = True
 
@@ -182,21 +182,21 @@ models_config = [
     # },
 
     # ── UNETR-ViT (direct upsample) ─────────────────────────────────────────
-    {
-        'name':          'UNETR-ViT-D1-Direct',
-        'model':         UNETR_ViT(model_name='vit_base_patch16_224', num_classes=NUM_CLASSES, depth=1,  direct_upsample=True,  pretrained=True,  dynamic_img_size=True),
-        'model_path':    None,
-        'train_model':   True,
-        'evaluate_only': False,
-    },
+    # {
+    #     'name':          'UNETR-ViT-D1-Direct',
+    #     'model':         UNETR_ViT(model_name='vit_base_patch16_224', num_classes=NUM_CLASSES, depth=1,  direct_upsample=True,  pretrained=True,  dynamic_img_size=True),
+    #     'model_path':    '/home/litisnouman/Desktop/Thesis_18_02_26/saved_models/maze_224_11_unetr_vit_d1_direct_dice0_86_epoch295.pth',
+    #     'train_model':   True,
+    #     'evaluate_only': False,
+    # },
 
-    {
-        'name':          'UNETR-ViT-D2-Direct',
-        'model':         UNETR_ViT(model_name='vit_base_patch16_224', num_classes=NUM_CLASSES, depth=2,  direct_upsample=True,  pretrained=True,  dynamic_img_size=True),
-        'model_path':    None,
-        'train_model':   True,
-        'evaluate_only': False,
-    },
+    # {
+    #     'name':          'UNETR-ViT-D2-Direct',
+    #     'model':         UNETR_ViT(model_name='vit_base_patch16_224', num_classes=NUM_CLASSES, depth=2,  direct_upsample=True,  pretrained=True,  dynamic_img_size=True),
+    #     'model_path':    None,
+    #     'train_model':   True,
+    #     'evaluate_only': False,
+    # },
 
     # {
     #     'name':          'UNETR-ViT-D3-Direct',
@@ -395,13 +395,13 @@ models_config = [
     #     'train_model':   True,
     #     'evaluate_only': False,
     # },
-    {
-        'name':          'VGGUNet-D5-Direct',
-        'model':         VGGUNet_Dynamic(in_channels=IN_CHANNELS, out_channels=NUM_CLASSES, depth=5, direct_upsample=True,  pretrained=True),
-        'model_path':    None,
-        'train_model':   True,
-        'evaluate_only': False,
-    },
+    # {
+    #     'name':          'VGGUNet-D5-Direct',
+    #     'model':         VGGUNet_Dynamic(in_channels=IN_CHANNELS, out_channels=NUM_CLASSES, depth=5, direct_upsample=True,  pretrained=True),
+    #     'model_path':    None,
+    #     'train_model':   True,
+    #     'evaluate_only': False,
+    # },
 
     # # ── TransUNet ───────────────────────────────────────────────────────────
     # {

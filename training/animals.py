@@ -18,7 +18,8 @@ from torch.utils.data import DataLoader
 import albumentations as A
 
 from datasets import AnimalDataset
-from models.models import UNET, UNETR_ViT, UNETR_SAM, TransUNet, CustomTorchVisionSegmentation, CustomSMP
+from models.models import UNET, UNETR_ViT, UNETR_SAM, CustomTorchVisionSegmentation, CustomSMP, VGGUNet_Dynamic
+from models.models_transunet import TransUNet
 from utils.train import train
 from utils.metrics import evaluate
 
@@ -53,10 +54,6 @@ PLOTS_DIR        = '/home/litisnouman/Desktop/Thesis_18_02_26/plots'
 # Augmentation
 AUG_PROB         = 0.5
 ROTATION_LIMIT   = 180
-
-# Model architecture depth defaults
-UNETR_ViT_DEPTH  = 6
-UNETR_SAM_DEPTH  = 6
 
 # ==============================================================================
 # DATASET PATHS
@@ -139,17 +136,117 @@ models_config = [
 
     # ── Vanilla UNet ────────────────────────────────────────────────────────
     {
-        'name':          'UNET',
+        'name':          'UNET-D1',
+        'model':         UNET(in_channels=IN_CHANNELS, out_channels=NUM_CLASSES, depth=1),
+        'model_path':    None,
+        'train_model':   True,
+        'evaluate_only': False,
+    },
+    {
+        'name':          'UNET-D2',
+        'model':         UNET(in_channels=IN_CHANNELS, out_channels=NUM_CLASSES, depth=2),
+        'model_path':    None,
+        'train_model':   True,
+        'evaluate_only': False,
+    },
+    {
+        'name':          'UNET-D3',
+        'model':         UNET(in_channels=IN_CHANNELS, out_channels=NUM_CLASSES, depth=3),
+        'model_path':    None,
+        'train_model':   True,
+        'evaluate_only': False,
+    },
+    {
+        'name':          'UNET-D4',
         'model':         UNET(in_channels=IN_CHANNELS, out_channels=NUM_CLASSES, depth=4),
         'model_path':    None,
         'train_model':   True,
         'evaluate_only': False,
     },
 
-    # ── UNETR-ViT ───────────────────────────────────────────────────────────
+    # ── UNETR-ViT (nested decoder) ──────────────────────────────────────────
     {
-        'name':          f'UNETR-ViT-D{UNETR_ViT_DEPTH}',
-        'model':         UNETR_ViT(num_classes=NUM_CLASSES, depth=UNETR_ViT_DEPTH, pretrained=True),
+        'name':          'UNETR-ViT-D1',
+        'model':         UNETR_ViT(model_name='vit_base_patch16_224', num_classes=NUM_CLASSES, depth=1,  direct_upsample=False, pretrained=True,  dynamic_img_size=True),
+        'model_path':    None,
+        'train_model':   True,
+        'evaluate_only': False,
+    },
+    {
+        'name':          'UNETR-ViT-D2',
+        'model':         UNETR_ViT(model_name='vit_base_patch16_224', num_classes=NUM_CLASSES, depth=2,  direct_upsample=False, pretrained=True,  dynamic_img_size=True),
+        'model_path':    None,
+        'train_model':   True,
+        'evaluate_only': False,
+    },
+    {
+        'name':          'UNETR-ViT-D3',
+        'model':         UNETR_ViT(model_name='vit_base_patch16_224', num_classes=NUM_CLASSES, depth=3,  direct_upsample=False, pretrained=True,  dynamic_img_size=True),
+        'model_path':    None,
+        'train_model':   True,
+        'evaluate_only': False,
+    },
+    {
+        'name':          'UNETR-ViT-D6',
+        'model':         UNETR_ViT(model_name='vit_base_patch16_224', num_classes=NUM_CLASSES, depth=6,  direct_upsample=False, pretrained=True,  dynamic_img_size=True),
+        'model_path':    None,
+        'train_model':   True,
+        'evaluate_only': False,
+    },
+    {
+        'name':          'UNETR-ViT-D9',
+        'model':         UNETR_ViT(model_name='vit_base_patch16_224', num_classes=NUM_CLASSES, depth=9,  direct_upsample=False, pretrained=True,  dynamic_img_size=True),
+        'model_path':    None,
+        'train_model':   True,
+        'evaluate_only': False,
+    },
+    {
+        'name':          'UNETR-ViT-D12',
+        'model':         UNETR_ViT(model_name='vit_base_patch16_224', num_classes=NUM_CLASSES, depth=12, direct_upsample=False, pretrained=True,  dynamic_img_size=True),
+        'model_path':    None,
+        'train_model':   True,
+        'evaluate_only': False,
+    },
+
+    # ── UNETR-ViT (direct upsample) ─────────────────────────────────────────
+    {
+        'name':          'UNETR-ViT-D1-Direct',
+        'model':         UNETR_ViT(model_name='vit_base_patch16_224', num_classes=NUM_CLASSES, depth=1,  direct_upsample=True,  pretrained=True,  dynamic_img_size=True),
+        'model_path':    None,
+        'train_model':   True,
+        'evaluate_only': False,
+    },
+    {
+        'name':          'UNETR-ViT-D2-Direct',
+        'model':         UNETR_ViT(model_name='vit_base_patch16_224', num_classes=NUM_CLASSES, depth=2,  direct_upsample=True,  pretrained=True,  dynamic_img_size=True),
+        'model_path':    None,
+        'train_model':   True,
+        'evaluate_only': False,
+    },
+    {
+        'name':          'UNETR-ViT-D3-Direct',
+        'model':         UNETR_ViT(model_name='vit_base_patch16_224', num_classes=NUM_CLASSES, depth=3,  direct_upsample=True,  pretrained=True,  dynamic_img_size=True),
+        'model_path':    None,
+        'train_model':   True,
+        'evaluate_only': False,
+    },
+    {
+        'name':          'UNETR-ViT-D6-Direct',
+        'model':         UNETR_ViT(model_name='vit_base_patch16_224', num_classes=NUM_CLASSES, depth=6,  direct_upsample=True,  pretrained=True,  dynamic_img_size=True),
+        'model_path':    None,
+        'train_model':   True,
+        'evaluate_only': False,
+    },
+    {
+        'name':          'UNETR-ViT-D9-Direct',
+        'model':         UNETR_ViT(model_name='vit_base_patch16_224', num_classes=NUM_CLASSES, depth=9,  direct_upsample=True,  pretrained=True,  dynamic_img_size=True),
+        'model_path':    None,
+        'train_model':   True,
+        'evaluate_only': False,
+    },
+    {
+        'name':          'UNETR-ViT-D12-Direct',
+        'model':         UNETR_ViT(model_name='vit_base_patch16_224', num_classes=NUM_CLASSES, depth=12, direct_upsample=True,  pretrained=True,  dynamic_img_size=True),
         'model_path':    None,
         'train_model':   True,
         'evaluate_only': False,
@@ -157,8 +254,87 @@ models_config = [
 
     # ── UNETR-SAM ───────────────────────────────────────────────────────────
     {
-        'name':          f'UNETR-SAM-D{UNETR_SAM_DEPTH}',
-        'model':         UNETR_SAM(num_classes=NUM_CLASSES, depth=UNETR_SAM_DEPTH, pretrained=True),
+        'name':          'UNETR-SAM-D1',
+        'model':         UNETR_SAM(num_classes=NUM_CLASSES, depth=1,  direct_upsample=False, pretrained=True),
+        'model_path':    None,
+        'train_model':   True,
+        'evaluate_only': False,
+    },
+    {
+        'name':          'UNETR-SAM-D2',
+        'model':         UNETR_SAM(num_classes=NUM_CLASSES, depth=2,  direct_upsample=False, pretrained=True),
+        'model_path':    None,
+        'train_model':   True,
+        'evaluate_only': False,
+    },
+    {
+        'name':          'UNETR-SAM-D3',
+        'model':         UNETR_SAM(num_classes=NUM_CLASSES, depth=3,  direct_upsample=False, pretrained=True),
+        'model_path':    None,
+        'train_model':   True,
+        'evaluate_only': False,
+    },
+    {
+        'name':          'UNETR-SAM-D6',
+        'model':         UNETR_SAM(num_classes=NUM_CLASSES, depth=6,  direct_upsample=False, pretrained=True),
+        'model_path':    None,
+        'train_model':   True,
+        'evaluate_only': False,
+    },
+    {
+        'name':          'UNETR-SAM-D9',
+        'model':         UNETR_SAM(num_classes=NUM_CLASSES, depth=9,  direct_upsample=False, pretrained=True),
+        'model_path':    None,
+        'train_model':   True,
+        'evaluate_only': False,
+    },
+    {
+        'name':          'UNETR-SAM-D12',
+        'model':         UNETR_SAM(num_classes=NUM_CLASSES, depth=12, direct_upsample=False, pretrained=True),
+        'model_path':    None,
+        'train_model':   True,
+        'evaluate_only': False,
+    },
+
+    # ── UNETR-SAM (direct upsample) ─────────────────────────────────────────
+    {
+        'name':          'UNETR-SAM-D1-Direct',
+        'model':         UNETR_SAM(num_classes=NUM_CLASSES, depth=1,  direct_upsample=True, pretrained=True),
+        'model_path':    None,
+        'train_model':   True,
+        'evaluate_only': False,
+    },
+    {
+        'name':          'UNETR-SAM-D2-Direct',
+        'model':         UNETR_SAM(num_classes=NUM_CLASSES, depth=2,  direct_upsample=True, pretrained=True),
+        'model_path':    None,
+        'train_model':   True,
+        'evaluate_only': False,
+    },
+    {
+        'name':          'UNETR-SAM-D3-Direct',
+        'model':         UNETR_SAM(num_classes=NUM_CLASSES, depth=3,  direct_upsample=True, pretrained=True),
+        'model_path':    None,
+        'train_model':   True,
+        'evaluate_only': False,
+    },
+    {
+        'name':          'UNETR-SAM-D6-Direct',
+        'model':         UNETR_SAM(num_classes=NUM_CLASSES, depth=6,  direct_upsample=True, pretrained=True),
+        'model_path':    None,
+        'train_model':   True,
+        'evaluate_only': False,
+    },
+    {
+        'name':          'UNETR-SAM-D9-Direct',
+        'model':         UNETR_SAM(num_classes=NUM_CLASSES, depth=9,  direct_upsample=True, pretrained=True),
+        'model_path':    None,
+        'train_model':   True,
+        'evaluate_only': False,
+    },
+    {
+        'name':          'UNETR-SAM-D12-Direct',
+        'model':         UNETR_SAM(num_classes=NUM_CLASSES, depth=12, direct_upsample=True, pretrained=True),
         'model_path':    None,
         'train_model':   True,
         'evaluate_only': False,
@@ -174,7 +350,7 @@ models_config = [
     },
     {
         'name':          'FCN-ResNet50',
-        'model':         CustomTorchVisionSegmentation(model_type='fcn', num_classes=NUM_CLASSES, pretrained=True),
+        'model':         CustomTorchVisionSegmentation(model_type='fcn',       num_classes=NUM_CLASSES, pretrained=True),
         'model_path':    None,
         'train_model':   True,
         'evaluate_only': False,
@@ -183,14 +359,65 @@ models_config = [
     # ── SMP ─────────────────────────────────────────────────────────────────
     {
         'name':          'SMP-Unet-ResNet50',
-        'model':         CustomSMP(arch='Unet', encoder_name='resnet50', encoder_weights='imagenet', num_classes=NUM_CLASSES, in_channels=IN_CHANNELS),
+        'model':         CustomSMP(arch='Unet',       encoder_name='resnet50', encoder_weights='imagenet', num_classes=NUM_CLASSES, in_channels=IN_CHANNELS),
         'model_path':    None,
         'train_model':   True,
         'evaluate_only': False,
     },
     {
         'name':          'SMP-Unet-VGG16',
-        'model':         CustomSMP(arch='Unet', encoder_name='vgg16', encoder_weights='imagenet', num_classes=NUM_CLASSES, in_channels=IN_CHANNELS),
+        'model':         CustomSMP(arch='Unet',       encoder_name='vgg16',    encoder_weights='imagenet', num_classes=NUM_CLASSES, in_channels=IN_CHANNELS),
+        'model_path':    None,
+        'train_model':   True,
+        'evaluate_only': False,
+    },
+
+    # ── VGGUNet ─────────────────────────────────────────────────────────────
+    {
+        'name':          'VGGUNet-D1',
+        'model':         VGGUNet_Dynamic(in_channels=IN_CHANNELS, out_channels=NUM_CLASSES, depth=1, direct_upsample=False, pretrained=True),
+        'model_path':    None,
+        'train_model':   True,
+        'evaluate_only': False,
+    },
+    {
+        'name':          'VGGUNet-D2',
+        'model':         VGGUNet_Dynamic(in_channels=IN_CHANNELS, out_channels=NUM_CLASSES, depth=2, direct_upsample=False, pretrained=True),
+        'model_path':    None,
+        'train_model':   True,
+        'evaluate_only': False,
+    },
+    {
+        'name':          'VGGUNet-D3',
+        'model':         VGGUNet_Dynamic(in_channels=IN_CHANNELS, out_channels=NUM_CLASSES, depth=3, direct_upsample=False, pretrained=True),
+        'model_path':    None,
+        'train_model':   True,
+        'evaluate_only': False,
+    },
+    {
+        'name':          'VGGUNet-D4',
+        'model':         VGGUNet_Dynamic(in_channels=IN_CHANNELS, out_channels=NUM_CLASSES, depth=4, direct_upsample=False, pretrained=True),
+        'model_path':    None,
+        'train_model':   True,
+        'evaluate_only': False,
+    },
+    {
+        'name':          'VGGUNet-D5',
+        'model':         VGGUNet_Dynamic(in_channels=IN_CHANNELS, out_channels=NUM_CLASSES, depth=5, direct_upsample=False, pretrained=True),
+        'model_path':    None,
+        'train_model':   True,
+        'evaluate_only': False,
+    },
+    {
+        'name':          'VGGUNet-D1-Direct',
+        'model':         VGGUNet_Dynamic(in_channels=IN_CHANNELS, out_channels=NUM_CLASSES, depth=1, direct_upsample=True,  pretrained=True),
+        'model_path':    None,
+        'train_model':   True,
+        'evaluate_only': False,
+    },
+    {
+        'name':          'VGGUNet-D5-Direct',
+        'model':         VGGUNet_Dynamic(in_channels=IN_CHANNELS, out_channels=NUM_CLASSES, depth=5, direct_upsample=True,  pretrained=True),
         'model_path':    None,
         'train_model':   True,
         'evaluate_only': False,
@@ -199,7 +426,7 @@ models_config = [
     # ── TransUNet ───────────────────────────────────────────────────────────
     {
         'name':          'TransUNet',
-        'model':         TransUNet(img_size=IMG_SIZE, num_classes=NUM_CLASSES),
+        'model':         TransUNet(img_size=IMG_SIZE, num_classes=NUM_CLASSES, pretrained=True),
         'model_path':    None,
         'train_model':   True,
         'evaluate_only': False,
